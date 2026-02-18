@@ -1,0 +1,27 @@
+name: Release
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # get all commits
+          fetch-depth: 0
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+      - name: Install dependencies
+        # @see: https://github.com/semantic-release/semantic-release/discussions/2500#discussioncomment-3118983
+        run: npm --location=global i semantic-release{@19,-gitmoji} @semantic-release/{changelog,git}
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npx semantic-release@19
